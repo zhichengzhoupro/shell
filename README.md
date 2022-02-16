@@ -274,6 +274,12 @@ su切换成root用户以后，pwd一下，发现工作目录仍然是普通用�
             <br />
             在输出重定向中，<code>&gt;</code>代表的是覆盖，<code>&gt;&gt;</code>代表的是追加。
 
+            -   0表示标准输入
+            -   1表示标准输出
+            -   2表示标准错误输出
+            -   ">" 默认为标准输出重定向，与 1> 相同
+            -   2>&1 意思是把 标准错误输出 重定向到 标准输出.
+            -   &>file 意思是把 标准输出 和 标准错误输出 都重定向到文件file中
     2.  < 输入重定向
          
          /usr/bin/cat < /etc/host
@@ -294,3 +300,50 @@ su切换成root用户以后，pwd一下，发现工作目录仍然是普通用�
     +   11.4 () 在子shell中执行不会影响当前shell (unmask 077;touch test.txt)
     +   11.5 {} 集合 touch file{1..9}
         *   mkdir /home/{111,222}
+    +   11.6 \ 转义字符 
+        *   让通配符符号回归本意 \* 就只表示*这个字符
+        *   让普通字符变成有意义的字符 \t 空格 \n 换行
+        *   让自己变成普通符号 \\
+
+12. 小知识
+    +   echo输出带颜色文本
+        *   linux echo -e "\e[1;31mThis is red text."
+        *   mac echo -e "\033[1;31mThis is red text.\033[1;34mother color\033[1;0mhafez"
+        *   mac echo -e "\033[1;42mThis is red text.\033[1;45mother color\033[1;0mhafez"
+    +   printf 格式化输出文本
+        *  
+    +   /dev/null是一个特殊的设备文件，这个文件接收到任何数据都会被丢弃。因此，null这个设备通常也被称为位桶（bit bucket）或黑洞。 
+
+    +   source命令用法
+        -   source FileName
+        -   source命令作用:在<font style="color:red">当前shell环境</font>下读取并执行FileName中的命令。
+        
+        *注：该命令通常用命令“.”来替代。
+#   第三天
+##  SHELL 变量
+### 自定义变量
+1.  什么是变量：用一个特定的字符串去代表不固定的内容
+2.  变量的定义： 变量名=变量值 变量名必须以字母,或者下划线开头
+3.  变量的赋值
+    *   显示赋值->在脚本中赋值 
+    *   使用read命令-> 从键盘上赋值
+    *   $1,$2 位置变量 执行脚本的时候带的变量的顺序
+4.  引用变量
+    *   $变量名
+    *   ${变量名}
+5.  查看变量：echo $变量名
+6.  取消变量： unset $变量名
+
+7.  作用范围： 仅在当前shell中起作用
+
+### 环境变量
+1.  定义环境变量
+    *   方法一： export back_dir=/dz/fds
+    *   方法二： export back_dir 将自定义变量转换成环境变量
+2.  作用域： 全局  
+3.  查看变量：echo $变量名
+4.  取消变量： unset $变量名
+
+         
+        
+ 
