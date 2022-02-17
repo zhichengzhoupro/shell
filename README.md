@@ -189,9 +189,9 @@ su切换成root用户以后，pwd一下，发现工作目录仍然是普通用�
             kill %3 当前shell的后来进程序列号
 8. 输入输出重定向
     1. 0，1，2 > >> 
-        *   0 输入 默认键盘
-        *   1 输出默认 屏幕
-        *   2  错误信息
+        *   0 代表输入 默认键盘
+        *   1 代表输出默认 屏幕
+        *   2 代表错误信息
             <table>
                 <caption>表2：Bash 支持的输出重定向符号</caption>
                 <tbody>
@@ -313,12 +313,34 @@ su切换成root用户以后，pwd一下，发现工作目录仍然是普通用�
     +   printf 格式化输出文本
         *  
     +   /dev/null是一个特殊的设备文件，这个文件接收到任何数据都会被丢弃。因此，null这个设备通常也被称为位桶（bit bucket）或黑洞。 
-
+    
+    +   echo 显示的文字中需要执行命令
+    
+        *   使用反引号
+            ````shell script
+            
+                echo "usage: `basename $0` file"
+            
+            ````
+  
     +   source命令用法
         -   source FileName
         -   source命令作用:在<font style="color:red">当前shell环境</font>下读取并执行FileName中的命令。
         
         *注：该命令通常用命令“.”来替代。
+    +   dirname / basename
+        *   dirname 用来显示路径前面的文件名
+             ````shell script
+                zhichengzhou$ dirname /Users/hadoop/Documents/
+                /Users/hadoop
+             ````
+        *   basename 用来显示路径最后文件名
+             ````shell script
+                zhichengzhou$ dirname /Users/hadoop/Documents/
+                Documents
+             ````
+           
+        
 #   第三天
 ##  SHELL 变量
 ### 自定义变量
@@ -341,8 +363,97 @@ su切换成root用户以后，pwd一下，发现工作目录仍然是普通用�
     *   方法一： export back_dir=/dz/fds
     *   方法二： export back_dir 将自定义变量转换成环境变量
 2.  作用域： 全局  
-3.  查看变量：echo $变量名
+3.  查看变量：echo $变量名 / env 命令
 4.  取消变量： unset $变量名
+5.  作用： 一般作为系统变量，我们可以直接使用
+
+### 知识点
+1.  几个脚本使用共有变量
+    *   ![image info](./pictures/2.png)
+    
+2.  查看所有环境变量
+    *   env 
+
+
+### 引用变量区别
+1.  $变量名
+2.  ${变量名} 这种方法更加严谨
+    *   echo "${变量名}文字" 后面直接跟上文字
+    *   ${#变量名} 这个是变量的长度
+    
+### echo 显示变量
+1.  echo "$变量名" 显示变量的值
+2.  echo '$变量名' 单引号变量就是字符，并不会当成变量
+    *   echo '$变量名='$变量名 
+
+### 位置变量
+1.  $1 $2 $3 ${10}
+
+### 预定义变量
+1.  $0 脚本名 (带路径的 如果执行脚本通过相对路径就是相对，绝对就是绝对)
+2.  $* 所有的参数
+    *   当 $* 和 $@ 不被双引号" "包围时，它们之间没有任何区别，都是将接收到的每个参数看做一份数据，彼此之间以空格来分隔。
+        
+        但是当它们被双引号" "包含时，就会有区别了：
+        "$*"会将所有的参数从整体上看做一份数据，而不是把每个参数都看做一份数据。
+        "$@"仍然将每个参数都看作一份数据，彼此之间是独立的。
+        ````shell script
+            echo "print each param from \"\$*\""
+            for var in "$*"
+            do
+                echo "$var"
+            done
+            echo "print each param from \"\$@\""
+            for var in "$@"
+            do
+                echo "$var"
+            done
+        ````
+        ````shell script
+            [mozhiyan@localhost demo]$ . ./test.sh a b c d
+            print each param from "$*"
+            a b c d
+            print each param from "$@"
+            a
+            b
+            c
+            d
+        ````
+        从运行结果可以发现，对于"$*"，只循环了 1 次，因为它只有 1 分数据；对于"$@"，循环了 5 次，因为它有 5 份数据。
+        
+3.  $@ 所有的参数
+4.  $# 参数的个数
+5.  $$ 当前进程的PID
+6.  $! 上一个后台（&）进程的PID
+7.  $? 上一个进程的返回值 正确为0
+
+#   第四天
+##  变量的赋值
+1.  显式赋值 变量名=值 shell 变量无类型，可以都看作是string字符串类型
+    *   ip=192.168.1.2
+    *   school="beijing University" -> 如果字符串中间有空格 需要双引号
+    *   city = "${school}city" -> 值也来自于其他的变量
+    *   today=`date +%F` 执行date命令后的输出给today赋值 (命令替换)
+    *   today=$(date +%F) (命令替换)
+
+2.  从键盘输入
+    *   read 变量名
+    *   read -p "提示" 变量名
+    *   read -t 5 -p "提示信息" 变量名    
+        +   -t : 表示给用户5秒的时间输入
+    *   read -n 2 变量名
+        +   -n 取输入的前n个字符
+
+3. 定义或引用变量时注意
+    *   " " 弱引用  双引号当中，可以引用变量的值
+    *   ' ' 强引用  单引号当中,内容即内容
+    *   ` ` 命令替换 等价于$(),反引号中的命令会被先执行
+        +   touch `date +%F`-file.txt
+        +   touch $(date +%F)-file.txt
+
+##  变量的计算
+
+
 
          
         
